@@ -75,7 +75,7 @@ static
 
 forward void:AddModelDialogMenuItem(List:list, modelid, Float:sizeX = 53.000, Float:sizeY = 53.000, Float:rotationX = 0.000, Float:rotationY = 0.000, Float:rotationZ = 0.000, Float:zoom = 1.000, Float:offsetX = 0.000, Float:offsetY = 0.000);
 forward bool:ShowModelDialogMenu(playerid, List:list, const caption[], const button1[], const button2[], start = 0);
-forward Task:ShowModelDialogMenuAsync(playerid, List:list, const caption[], const button1[], const button2[], start = 0);
+forward Task:ShowAsyncModelDialogMenu(playerid, List:list, const caption[], const button1[], const button2[], start = 0);
 forward bool:HideModelDialogMenu(playerid);
 
 /**
@@ -312,7 +312,7 @@ stock bool:ShowModelDialogMenu(playerid, List:list, const caption[], const butto
     return true;
 }
 
-stock Task:ShowModelDialogMenuAsync(playerid, List:list, const caption[], const button1[], const button2[], start = 0) {
+stock Task:ShowAsyncModelDialogMenu(playerid, List:list, const caption[], const button1[], const button2[], start = 0) {
     if (!IsPlayerConnected(playerid)) {
         return INVALID_TASK;
     }
