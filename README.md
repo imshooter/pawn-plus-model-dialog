@@ -18,7 +18,7 @@ void:ShowSkinsModelDialog(playerid) {
         AddModelDialogMenuItem(list, i);
     }
 
-    await_arr(response) ShowModelDialogMenuAsync(playerid, list, "SKINS", "SELECT", "CANCEL");
+    await_arr(response) ShowAsyncModelDialogMenu(playerid, list, "SKINS", "SELECT", "CANCEL");
 
     if (response[E_MODEL_DIALOG_RESPONSE] == MODEL_DIALOG_RESPONSE_SELECT) {
         SetPlayerSkin(playerid, response[E_MODEL_DIALOG_MODEL_ID]);
@@ -76,7 +76,7 @@ void:ShowItemsModelDialog(playerid) {
         );
     }
 
-    await_arr(response) ShowModelDialogMenuAsync(playerid, list, "ITEMS", "SELECT", "CANCEL");
+    await_arr(response) ShowAsyncModelDialogMenu(playerid, list, "ITEMS", "SELECT", "CANCEL");
 
     // ...
 }
@@ -92,3 +92,4 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
 }
 ```
 ![Items](https://github.com/user-attachments/assets/34867ae6-0b5a-4eaf-851a-7c54b183fda0)
+
