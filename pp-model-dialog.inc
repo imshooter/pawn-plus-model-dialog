@@ -205,6 +205,7 @@ static void:ShowModelDialogMenuPage(playerid, page) {
         TextDrawHideForPlayer(playerid, gTextDrawData[E_TEXT_DRAW_BOX_BUTTON][menuItem]);
         TextDrawHideForPlayer(playerid, gTextDrawData[E_TEXT_DRAW_BOX_TOP][menuItem]);
         TextDrawHideForPlayer(playerid, gTextDrawData[E_TEXT_DRAW_MODEL_PREVIEW][menuItem]);
+        PlayerTextDrawHide(playerid, gPlayerTextDrawData[playerid][E_PLAYER_TEXT_DRAW_DESC][menuItem]);
     }
 
     new const
@@ -267,10 +268,6 @@ static void:ResetModelDialogMenuData(playerid) {
     gPlayerTextDrawData[playerid][E_PLAYER_TEXT_DRAW_FIRST_BUTTON] = INVALID_PLAYER_TEXT_DRAW;
     gPlayerTextDrawData[playerid][E_PLAYER_TEXT_DRAW_SECOND_BUTTON] = INVALID_PLAYER_TEXT_DRAW;
 
-    for (new i; i != MODEL_DIALOG_PAGE_ITEMS; ++i) {
-        gPlayerTextDrawData[playerid][E_PLAYER_TEXT_DRAW_DESC][i] = INVALID_PLAYER_TEXT_DRAW;
-    }
-
     if (gPlayerMenuData[playerid][E_PLAYER_MENU_LIST]) {
         list_delete(gPlayerMenuData[playerid][E_PLAYER_MENU_LIST]);
     }
@@ -284,6 +281,10 @@ static void:ResetModelDialogMenuData(playerid) {
 static void:ResetModelDialogMenuDataAndTask(playerid) {
     if (gPlayerMenuData[playerid][E_PLAYER_MENU_TASK]) {
         task_delete(gPlayerMenuData[playerid][E_PLAYER_MENU_TASK]);
+    }
+
+    for (new i; i != MODEL_DIALOG_PAGE_ITEMS; ++i) {
+        gPlayerTextDrawData[playerid][E_PLAYER_TEXT_DRAW_DESC][i] = INVALID_PLAYER_TEXT_DRAW;
     }
 
     gPlayerMenuData[playerid][E_PLAYER_MENU_TASK] = INVALID_TASK;
@@ -370,6 +371,9 @@ stock bool:HideModelDialogMenu(playerid) {
         TextDrawHideForPlayer(playerid, gTextDrawData[E_TEXT_DRAW_BOX_BUTTON][i]);
         TextDrawHideForPlayer(playerid, gTextDrawData[E_TEXT_DRAW_BOX_TOP][i]);
         TextDrawHideForPlayer(playerid, gTextDrawData[E_TEXT_DRAW_MODEL_PREVIEW][i]);
+
+        PlayerTextDrawDestroy(playerid, gPlayerTextDrawData[playerid][E_PLAYER_TEXT_DRAW_DESC][i]);
+        gPlayerTextDrawData[playerid][E_PLAYER_TEXT_DRAW_DESC][i] = INVALID_PLAYER_TEXT_DRAW;
     }
 
     TextDrawHideForPlayer(playerid, gTextDrawData[E_TEXT_DRAW_UP_BUTTON]);
