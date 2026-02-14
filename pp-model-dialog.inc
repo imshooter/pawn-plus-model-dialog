@@ -205,7 +205,7 @@ static void:ShowModelDialogMenuPage(playerid, page) {
         TextDrawHideForPlayer(playerid, gTextDrawData[E_TEXT_DRAW_BOX_BUTTON][menuItem]);
         TextDrawHideForPlayer(playerid, gTextDrawData[E_TEXT_DRAW_BOX_TOP][menuItem]);
         TextDrawHideForPlayer(playerid, gTextDrawData[E_TEXT_DRAW_MODEL_PREVIEW][menuItem]);
-        PlayerTextDrawHide(playerid, gPlayerTextDrawData[playerid][E_PLAYER_TEXT_DRAW_DESC][menuItem]);
+        PlayerTextDrawSetString(playerid, gPlayerTextDrawData[playerid][E_PLAYER_TEXT_DRAW_DESC][menuItem], "");
     }
 
     new const
