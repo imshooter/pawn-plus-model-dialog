@@ -51,6 +51,18 @@ void:ShowItemsModelDialog(playerid) {
         models[] = {2891, 1271, 19054, 19055, 19056, 19057, 19058, 355, 356}
     ;
 
+    new const desc[][] = {
+        "~w~Clothing Package~n~~y~X~w~1",
+        "~w~Wooden Box~n~~y~X~w~1",
+        "~w~Common Box~n~~y~X~w~1",
+        "~w~Uncommon Box~n~~y~X~w~1",
+        "~w~Rare Box~n~~y~X~w~1",
+        "~w~Epic Box~n~~y~X~w~1",
+        "~w~Legendary Box~n~~y~X~w~1",
+        "~w~AK47~n~~y~X~w~200",
+        "~w~M4~n~~y~X~w~200"
+    };
+
     new const Float:arr[][] = {
         {53.0, 53.0, -20.0, 00.0, -45.0, 1.0, 01.0, 0.0},
         {53.0, 53.0, -20.0, 00.0, 045.0, 1.0, 00.0, 0.0},
@@ -64,7 +76,7 @@ void:ShowItemsModelDialog(playerid) {
     };
 
     for (new i, size = sizeof (models); i < size; i++) {
-        AddModelDialogMenuItem(list, models[i],
+        AddModelDialogMenuItem(list, models[i], desc[i],
             .sizeX = arr[i][0],
             .sizeY = arr[i][1],
             .rotationX = arr[i][2],
@@ -91,5 +103,4 @@ public OnPlayerCommandText(playerid, cmdtext[]) {
     return 0;
 }
 ```
-![Items](https://github.com/user-attachments/assets/34867ae6-0b5a-4eaf-851a-7c54b183fda0)
-
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/9459643f-0735-43c1-82b2-908d40498795" />
