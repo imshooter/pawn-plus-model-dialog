@@ -3,8 +3,11 @@
 #endif
 #define _INC_PP_MODEL_DIALOG
 
-#include <PawnPlus>
-#include <YSI_Coding\y_hooks>
+#include <pp-hooks>
+
+#if !defined MAX_MODEL_DIALOG_DESC_LEN
+    #define MAX_MODEL_DIALOG_DESC_LEN (32)
+#endif
 
 enum {
     MODEL_DIALOG_RESPONSE_SELECT,
@@ -39,10 +42,12 @@ static enum E_PLAYER_TEXT_DRAW_DATA {
     PlayerText:E_PLAYER_TEXT_DRAW_CAPTION,
     PlayerText:E_PLAYER_TEXT_DRAW_PAGE,
     PlayerText:E_PLAYER_TEXT_DRAW_FIRST_BUTTON,
-    PlayerText:E_PLAYER_TEXT_DRAW_SECOND_BUTTON
+    PlayerText:E_PLAYER_TEXT_DRAW_SECOND_BUTTON,
+    PlayerText:E_PLAYER_TEXT_DRAW_DESC[MODEL_DIALOG_PAGE_ITEMS]
 };
 
 static enum _:E_DIALOG_PREVIEW_DATA {
+    E_DIALOG_PREVIEW_DESC[MAX_MODEL_DIALOG_DESC_LEN],
     E_DIALOG_PREVIEW_MODEL_ID,
     Float:E_DIALOG_PREVIEW_SIZE_X,
     Float:E_DIALOG_PREVIEW_SIZE_Y,
@@ -73,7 +78,7 @@ static
  * # Functions
  */
 
-forward void:AddModelDialogMenuItem(List:list, modelid, Float:sizeX = 53.000, Float:sizeY = 53.000, Float:rotationX = 0.000, Float:rotationY = 0.000, Float:rotationZ = 0.000, Float:zoom = 1.000, Float:offsetX = 0.000, Float:offsetY = 0.000);
+forward void:AddModelDialogMenuItem(List:list, modelid, const description[] = "", Float:sizeX = 53.000, Float:sizeY = 53.000, Float:rotationX = 0.000, Float:rotationY = 0.000, Float:rotationZ = 0.000, Float:zoom = 1.000, Float:offsetX = 0.000, Float:offsetY = 0.000);
 forward bool:ShowModelDialogMenu(playerid, List:list, const caption[], const button1[], const button2[], start = 0);
 forward Task:ShowAsyncModelDialogMenu(playerid, List:list, const caption[], const button1[], const button2[], start = 0);
 forward bool:HideModelDialogMenu(playerid);
@@ -105,13 +110,13 @@ static void:ShowModelDialogMenuTextDraws(playerid, const caption[], const button
 
     pt = gPlayerTextDrawData[playerid][E_PLAYER_TEXT_DRAW_SCROLL_BAR] = CreatePlayerTextDraw(playerid, 0.0, 0.0, "LD_DUAL:WHITE");
     PlayerTextDrawColour(playerid, pt, 0xFF0000FF);
-    PlayerTextDrawFont(playerid, pt, TEXT_DRAW_FONT_SPRITE_DRAW);
+    PlayerTextDrawFont(playerid, pt, TEXT_DRAW_FONT_SPRITE);
 
     pt = gPlayerTextDrawData[playerid][E_PLAYER_TEXT_DRAW_CAPTION] = CreatePlayerTextDraw(playerid, 142.000, 132.000, caption);
     PlayerTextDrawLetterSize(playerid, pt, 0.180, 1.000);
     PlayerTextDrawAlignment(playerid, pt, TEXT_DRAW_ALIGN_LEFT);
     PlayerTextDrawSetShadow(playerid, pt, 0);
-    PlayerTextDrawFont(playerid, pt, TEXT_DRAW_FONT_2);
+    PlayerTextDrawFont(playerid, pt, TEXT_DRAW_FONT_BANK_GOTHIC);
     PlayerTextDrawSetProportional(playerid, pt, true);
     PlayerTextDrawShow(playerid, pt);
 
@@ -119,7 +124,7 @@ static void:ShowModelDialogMenuTextDraws(playerid, const caption[], const button
     PlayerTextDrawLetterSize(playerid, pt, 0.180, 1.000);
     PlayerTextDrawAlignment(playerid, pt, TEXT_DRAW_ALIGN_RIGHT);
     PlayerTextDrawSetShadow(playerid, pt, 0);
-    PlayerTextDrawFont(playerid, pt, TEXT_DRAW_FONT_2);
+    PlayerTextDrawFont(playerid, pt, TEXT_DRAW_FONT_BANK_GOTHIC);
     PlayerTextDrawSetProportional(playerid, pt, true);
     PlayerTextDrawShow(playerid, pt);
 
@@ -127,7 +132,7 @@ static void:ShowModelDialogMenuTextDraws(playerid, const caption[], const button
     PlayerTextDrawLetterSize(playerid, pt, 0.180, 1.000);
     PlayerTextDrawAlignment(playerid, pt, TEXT_DRAW_ALIGN_CENTER);
     PlayerTextDrawSetShadow(playerid, pt, 0);
-    PlayerTextDrawFont(playerid, pt, TEXT_DRAW_FONT_2);
+    PlayerTextDrawFont(playerid, pt, TEXT_DRAW_FONT_BANK_GOTHIC);
     PlayerTextDrawSetProportional(playerid, pt, true);
     PlayerTextDrawShow(playerid, pt);
 
@@ -135,7 +140,7 @@ static void:ShowModelDialogMenuTextDraws(playerid, const caption[], const button
     PlayerTextDrawLetterSize(playerid, pt, 0.180, 1.000);
     PlayerTextDrawAlignment(playerid, pt, TEXT_DRAW_ALIGN_CENTER);
     PlayerTextDrawSetShadow(playerid, pt, 0);
-    PlayerTextDrawFont(playerid, pt, TEXT_DRAW_FONT_2);
+    PlayerTextDrawFont(playerid, pt, TEXT_DRAW_FONT_BANK_GOTHIC);
     PlayerTextDrawSetProportional(playerid, pt, true);
     PlayerTextDrawShow(playerid, pt);
 }
@@ -182,6 +187,18 @@ static void:ShowModelDialogMenuPage(playerid, page) {
         TextDrawShowForPlayer(playerid, gTextDrawData[E_TEXT_DRAW_BOX_BUTTON][menuItem]);
         TextDrawShowForPlayer(playerid, gTextDrawData[E_TEXT_DRAW_BOX_TOP][menuItem]);
         TextDrawShowForPlayer(playerid, gTextDrawData[E_TEXT_DRAW_MODEL_PREVIEW][menuItem]);
+
+        if (!PlayerTextDrawSetString(playerid, gPlayerTextDrawData[playerid][E_PLAYER_TEXT_DRAW_DESC][menuItem], data[E_DIALOG_PREVIEW_DESC])) {
+            gPlayerTextDrawData[playerid][E_PLAYER_TEXT_DRAW_DESC][menuItem] = CreatePlayerTextDraw(playerid,
+                151.000 + menuItem % MODEL_DIALOG_COLUMNS * 56.000,
+                155.000 + menuItem / MODEL_DIALOG_COLUMNS * 66.000, data[E_DIALOG_PREVIEW_DESC]
+            );
+            PlayerTextDrawLetterSize(playerid, gPlayerTextDrawData[playerid][E_PLAYER_TEXT_DRAW_DESC][menuItem], 0.120, 0.800);
+            PlayerTextDrawSetShadow(playerid, gPlayerTextDrawData[playerid][E_PLAYER_TEXT_DRAW_DESC][menuItem], 0);
+            PlayerTextDrawFont(playerid, gPlayerTextDrawData[playerid][E_PLAYER_TEXT_DRAW_DESC][menuItem], TEXT_DRAW_FONT_BANK_GOTHIC);
+            PlayerTextDrawSetProportional(playerid, gPlayerTextDrawData[playerid][E_PLAYER_TEXT_DRAW_DESC][menuItem], true);
+            PlayerTextDrawShow(playerid, gPlayerTextDrawData[playerid][E_PLAYER_TEXT_DRAW_DESC][menuItem]);
+        }
     }
 
     for (; menuItem != MODEL_DIALOG_PAGE_ITEMS; ++menuItem) {
@@ -250,6 +267,10 @@ static void:ResetModelDialogMenuData(playerid) {
     gPlayerTextDrawData[playerid][E_PLAYER_TEXT_DRAW_FIRST_BUTTON] = INVALID_PLAYER_TEXT_DRAW;
     gPlayerTextDrawData[playerid][E_PLAYER_TEXT_DRAW_SECOND_BUTTON] = INVALID_PLAYER_TEXT_DRAW;
 
+    for (new i; i != MODEL_DIALOG_PAGE_ITEMS; ++i) {
+        gPlayerTextDrawData[playerid][E_PLAYER_TEXT_DRAW_DESC][i] = INVALID_PLAYER_TEXT_DRAW;
+    }
+
     if (gPlayerMenuData[playerid][E_PLAYER_MENU_LIST]) {
         list_delete(gPlayerMenuData[playerid][E_PLAYER_MENU_LIST]);
     }
@@ -273,11 +294,12 @@ static void:ResetModelDialogMenuDataAndTask(playerid) {
  * # External
  */
 
-stock void:AddModelDialogMenuItem(List:list, modelid, Float:sizeX = 53.000, Float:sizeY = 53.000, Float:rotationX = 0.000, Float:rotationY = 0.000, Float:rotationZ = 0.000, Float:zoom = 1.000, Float:offsetX = 0.000, Float:offsetY = 0.000) {
+stock void:AddModelDialogMenuItem(List:list, modelid, const description[] = "", Float:sizeX = 53.000, Float:sizeY = 53.000, Float:rotationX = 0.000, Float:rotationY = 0.000, Float:rotationZ = 0.000, Float:zoom = 1.000, Float:offsetX = 0.000, Float:offsetY = 0.000) {
     new
         data[E_DIALOG_PREVIEW_DATA]
     ;
 
+    strcat(data[E_DIALOG_PREVIEW_DESC], description);
     data[E_DIALOG_PREVIEW_MODEL_ID] = modelid;
     data[E_DIALOG_PREVIEW_SIZE_X] = sizeX;
     data[E_DIALOG_PREVIEW_SIZE_Y] = sizeY;
@@ -379,64 +401,64 @@ hook OnGameModeInit() {
 
     t = gTextDrawData[E_TEXT_DRAW_BACKGROUND][0] = TextDrawCreate(139.000, 131.000, "LD_DUAL:BLACK");
     TextDrawTextSize(t, 361.500, 12.000);
-    TextDrawFont(t, TEXT_DRAW_FONT_SPRITE_DRAW);
+    TextDrawFont(t, TEXT_DRAW_FONT_SPRITE);
 
     t = gTextDrawData[E_TEXT_DRAW_BACKGROUND][1] = TextDrawCreate(139.000, 143.000, "LD_DUAL:BLACK");
     TextDrawTextSize(t, 361.500, 172.500);
     TextDrawColour(t, 200);
-    TextDrawFont(t, TEXT_DRAW_FONT_SPRITE_DRAW);
+    TextDrawFont(t, TEXT_DRAW_FONT_SPRITE);
 
     t = gTextDrawData[E_TEXT_DRAW_BACKGROUND][2] = TextDrawCreate(145.000, 150.000, "LD_DUAL:WHITE");
     TextDrawTextSize(t, 349.500, 135.000);
-    TextDrawFont(t, TEXT_DRAW_FONT_SPRITE_DRAW);
+    TextDrawFont(t, TEXT_DRAW_FONT_SPRITE);
 
     t = gTextDrawData[E_TEXT_DRAW_BACKGROUND][3] = TextDrawCreate(145.500, 150.500, "LD_DUAL:BLACK");
     TextDrawTextSize(t, 338.000, 134.000);
-    TextDrawFont(t, TEXT_DRAW_FONT_SPRITE_DRAW);
+    TextDrawFont(t, TEXT_DRAW_FONT_SPRITE);
 
     t = gTextDrawData[E_TEXT_DRAW_BACKGROUND][4] = TextDrawCreate(484.000, 150.500, "LD_DUAL:BLACK");
     TextDrawTextSize(t, 10.000, 134.000);
-    TextDrawFont(t, TEXT_DRAW_FONT_SPRITE_DRAW);
+    TextDrawFont(t, TEXT_DRAW_FONT_SPRITE);
 
     // SCROLL BAR
     t = gTextDrawData[E_TEXT_DRAW_BACKGROUND][5] = TextDrawCreate(482.000, 148.000, "LD_BEAT:CHIT");
     TextDrawTextSize(t, 14.000, 14.000);
-    TextDrawFont(t, TEXT_DRAW_FONT_SPRITE_DRAW);
+    TextDrawFont(t, TEXT_DRAW_FONT_SPRITE);
 
     t = gTextDrawData[E_TEXT_DRAW_BACKGROUND][6] = TextDrawCreate(482.000, 273.000, "LD_BEAT:CHIT");
     TextDrawTextSize(t, 14.000, 14.000);
-    TextDrawFont(t, TEXT_DRAW_FONT_SPRITE_DRAW);
+    TextDrawFont(t, TEXT_DRAW_FONT_SPRITE);
 
     t = gTextDrawData[E_TEXT_DRAW_UP_BUTTON] = TextDrawCreate(485.000, 151.000, "LD_BEAT:UP");
     TextDrawTextSize(t, 8.000, 8.000);
     TextDrawColour(t, 255);
-    TextDrawFont(t, TEXT_DRAW_FONT_SPRITE_DRAW);
+    TextDrawFont(t, TEXT_DRAW_FONT_SPRITE);
     TextDrawSetSelectable(t, true);
 
     t = gTextDrawData[E_TEXT_DRAW_DOWN_BUTTON] = TextDrawCreate(485.000, 276.500, "LD_BEAT:DOWN");
     TextDrawTextSize(t, 8.000, 8.000);
     TextDrawColour(t, 255);
-    TextDrawFont(t, TEXT_DRAW_FONT_SPRITE_DRAW);
+    TextDrawFont(t, TEXT_DRAW_FONT_SPRITE);
     TextDrawSetSelectable(t, true);
 
     // BUTTON
     t = gTextDrawData[E_TEXT_DRAW_SELECT_BUTTON] = TextDrawCreate(264.500, 292.500, "LD_DUAL:WHITE");
     TextDrawTextSize(t, 54.000, 15.000);
-    TextDrawFont(t, TEXT_DRAW_FONT_SPRITE_DRAW);
+    TextDrawFont(t, TEXT_DRAW_FONT_SPRITE);
     TextDrawSetSelectable(t, true);
 
     t = gTextDrawData[E_TEXT_DRAW_CANCEL_BUTTON] = TextDrawCreate(320.500, 292.500, "LD_DUAL:WHITE");
     TextDrawTextSize(t, 54.000, 15.000);
-    TextDrawFont(t, TEXT_DRAW_FONT_SPRITE_DRAW);
+    TextDrawFont(t, TEXT_DRAW_FONT_SPRITE);
     TextDrawSetSelectable(t, true);
 
     t = gTextDrawData[E_TEXT_DRAW_BACKGROUND][7] = TextDrawCreate(265.000, 293.000, "LD_DUAL:BLACK");
     TextDrawTextSize(t, 53.000, 14.000);
-    TextDrawFont(t, TEXT_DRAW_FONT_SPRITE_DRAW);
+    TextDrawFont(t, TEXT_DRAW_FONT_SPRITE);
 
     t = gTextDrawData[E_TEXT_DRAW_BACKGROUND][8] = TextDrawCreate(321.000, 293.000, "LD_DUAL:BLACK");
     TextDrawTextSize(t, 53.000, 14.000);
-    TextDrawFont(t, TEXT_DRAW_FONT_SPRITE_DRAW);
+    TextDrawFont(t, TEXT_DRAW_FONT_SPRITE);
 
     // BOX SELECTABLE
     for (new i; i != MODEL_DIALOG_PAGE_ITEMS; i++) {
@@ -445,7 +467,7 @@ hook OnGameModeInit() {
             152.500 + i / MODEL_DIALOG_COLUMNS * 66.000, "LD_DUAL:WHITE"
         );
         TextDrawTextSize(t, 54.000, 64.000);
-        TextDrawFont(t, TEXT_DRAW_FONT_SPRITE_DRAW);
+        TextDrawFont(t, TEXT_DRAW_FONT_SPRITE);
         TextDrawSetSelectable(t, true);
         gTextDrawBoxMenuItem[t] = i;
 
@@ -455,26 +477,26 @@ hook OnGameModeInit() {
         );
         TextDrawTextSize(t, 53.000, 63.000);
         TextDrawColour(t, 0x323232FF);
-        TextDrawFont(t, TEXT_DRAW_FONT_SPRITE_DRAW);
+        TextDrawFont(t, TEXT_DRAW_FONT_SPRITE);
 
         t = gTextDrawData[E_TEXT_DRAW_MODEL_PREVIEW][i] = TextDrawCreate(0.000, 0.000, "_");
         TextDrawBackgroundColour(t, 0);
-        TextDrawFont(t, TEXT_DRAW_FONT_MODEL_PREVIEW);
+        TextDrawFont(t, TEXT_DRAW_FONT_PREVIEW);
     }
 
-    return 1;
+    return 0;
 }
 
 hook OnPlayerConnect(playerid) {
     ResetModelDialogMenuDataAndTask(playerid);
 
-    return 1;
+    return 0;
 }
 
 hook OnPlayerDisconnect(playerid, reason) {
     ResetModelDialogMenuDataAndTask(playerid);
 
-    return 1;
+    return 0;
 }
 
 hook OnPlayerClickTextDraw(playerid, Text:clickedid) {
@@ -525,5 +547,5 @@ hook OnPlayerClickTextDraw(playerid, Text:clickedid) {
         }
     }
 
-    return 1;
+    return 0;
 }
